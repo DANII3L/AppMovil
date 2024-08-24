@@ -12,38 +12,30 @@ import {
 import {stylesCarts} from '../styles/stylesCarts';
 import {productsCartData} from '../data/productsCartData';
 import stylesHome from '../styles/stylesHome';
-import globalStyles from '../styles/globalStyles';
+import CardsProducts from './CardsProducts';
 
-const ShoppingCartsScreen = () => {
-  const renderCartItem = ({item}) => (
-    <TouchableOpacity
-      style={stylesHome.productCard}
-      onPress={() => cardBuyPress(item)}>
-      <Image source={{uri: item.image}} style={stylesHome.productImage} />
-      <View style={stylesHome.productInfo}>
-        <Text style={stylesHome.productTitle}>{item.title}</Text>
-        <Text style={stylesHome.productDescription}>{item.description}</Text>
-        <Text style={stylesHome.productValue}>${item.price.toFixed(2)}</Text>
-        {item.discount && (
-          <Text style={stylesHome.productDiscount}>-${item.discount}%</Text>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-
+const ShoppingCartsScreen = ({navigation}) => {
   const calculateTotal = () => {
     return productsCartData
       .reduce((total, item) => total + item.price * item.amount, 0)
       .toFixed(2);
   };
 
+  const cardBuyPress = item => {
+    navigation.navigate('Details', {id: item.id});
+  };
+
   return (
     <ScrollView>
       <View style={stylesHome.productListContainer}>
-        <Text style={globalStyles.titleBlack}>Lista de Productos</Text>
         <FlatList
           data={productsCartData}
-          renderItem={renderCartItem}
+          renderItem={({item}) => (
+            <CardsProducts
+              item={item}
+              cardBuyPress={cardBuyPress}
+            />
+          )}
           keyExtractor={item => item.id}
           contentContainerStyle={stylesHome.productList}
         />
