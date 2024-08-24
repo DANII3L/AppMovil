@@ -18,6 +18,7 @@ import {useAuth} from '../data/authContext';
 import {productsData} from '../data/productsData';
 import stylesHome from '../styles/stylesHome';
 import {ScrollView} from 'react-native-gesture-handler';
+import CardsProducts from './CardsProducts';
 
 const HomeScreen = ({navigation}) => {
   const {isAuthenticated} = useAuth();
@@ -49,22 +50,6 @@ const HomeScreen = ({navigation}) => {
     navigation.navigate('Details', {id: item.id});
   };
 
-  const renderProductItem = ({item}) => (
-    <TouchableOpacity
-      style={stylesHome.productCard}
-      onPress={() => cardBuyPress(item)}>
-      <Image source={{uri: item.image}} style={stylesHome.productImage} />
-      <View style={stylesHome.productInfo}>
-        <Text style={stylesHome.productTitle}>{item.title}</Text>
-        <Text style={stylesHome.productDescription}>{item.description}</Text>
-        <Text style={stylesHome.productValue}>${item.price.toFixed(2)}</Text>
-        {item.discount && (
-          <Text style={stylesHome.productDiscount}>-${item.discount}%</Text>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-
   return (
     <SafeAreaView style={globalStyles.safeArea}>
       <ScrollView contentContainerStyle={globalStyles.scrollViewContent}>
@@ -93,7 +78,9 @@ const HomeScreen = ({navigation}) => {
           <Text style={globalStyles.titleBlack}>Lista de Productos</Text>
           <FlatList
             data={filteredProducts}
-            renderItem={renderProductItem}
+            renderItem={({item}) => (
+              <CardsProducts item={item} cardBuyPress={cardBuyPress} />
+            )}
             keyExtractor={item => item.id.toString()}
             contentContainerStyle={stylesHome.productList}
           />
