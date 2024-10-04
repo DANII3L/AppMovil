@@ -1,24 +1,33 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import TaskContext from '../context/TaskContext';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const {state, dispatch} = useContext(TaskContext);
 
   useEffect(() => {
     const checkAuthStatus = async () => {
-      const token = await AsyncStorage.getItem('userToken');
+      const token = state.userConnect.lenght > 0;
       if (token) {
         setIsAuthenticated(true);
       }
     };
     checkAuthStatus();
-  }, []);
+  }, [state.userConnect]);
 
   const login = async (token) => {
     try {
-      await AsyncStorage.setItem('userToken', token);
+      await logout();
+      dispatch({
+        type: 'ADD_ITEM',
+        payload: {
+          userCorreo: token,
+        },
+        collectionType: 'userConnect',
+      });
       setIsAuthenticated(true);
     } catch (error) {
       console.error("Failed to save token", error);
@@ -27,7 +36,11 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('userToken');
+      dispatch({
+        type: 'DELETE_ALL_ITEMS',
+        payload: '',
+        collectionType: 'userConnect',
+      });
       setIsAuthenticated(false);
     } catch (error) {
       console.error("Failed to remove token", error);
@@ -36,22 +49,13 @@ export const AuthProvider = ({ children }) => {
 
   const registerDataUser = async (user) => {
     try {
-      const jsonUser = JSON.stringify(user);
-      await AsyncStorage.setItem('userData', jsonUser);
+      dispatch({
+        type: 'ADD_ITEM',
+        payload: user,
+        collectionType: 'users',
+      });
     } catch (e) {
       console.error('Error al guardar los datos', e);
-    }
-  };
-
-  const getDataUsers = async () => {
-    try {
-      const jsonUsers = await AsyncStorage.getItem('userData');
-      if (jsonUsers != null) {
-        const usersData = JSON.parse(jsonUsers);
-        return usersData;
-      }
-    } catch (e) {
-      console.error('Error al recuperar los datos', e);
     }
   };
 
@@ -67,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, registerDataUser, getDataUsers, getToken }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, registerDataUser, getToken }}>
       {children}
     </AuthContext.Provider>
   );

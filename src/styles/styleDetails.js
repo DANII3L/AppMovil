@@ -99,9 +99,14 @@ const styleDetails = StyleSheet.create({
     borderRadius: 4,
     padding: 8,
     fontSize: 16,
-    width: 80,
+    width: 100,
     textAlign: 'center',
     marginBottom: 16,
+  },
+  stock: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
 });
 

@@ -53,6 +53,12 @@ const stylesPurchases = StyleSheet.create({
     color: '#888',
     marginTop: 5,
   },
+  cancelIconContainer: {
+    marginLeft: 'auto',
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
 
 export default stylesPurchases;
