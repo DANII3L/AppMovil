@@ -43,6 +43,10 @@ const stylesFavorites = StyleSheet.create({
   },
   favIconContainer: {
     marginLeft: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 40,
+    height: 40,
   },
 });
 

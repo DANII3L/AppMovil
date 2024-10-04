@@ -1,23 +1,25 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import HomeScreen from '../src/components/HomeScreen';
+import HomeScreen from '../src/screen/HomeScreen';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import ProfileScreen from '../src/components/ProfileScreen';
-import ShoppingCartsScreen from '../src/components/ShoppingCartsScreen';
-import OptionsScreen from '../src/components/OptionsScreen';
-import SupportScreen from '../src/components/SupportScreen';
-import SearchBarScreen from '../src/components/SearchBarScreen';
-import SettingsScreen from '../src/components/SettingsScreen';
-import RegisterScreen from '../src/components/RegisterScreen';
-import PaymentBranchScreen from '../src/components/PaymentBranchScreen';
-import OffersScreen from '../src/components/OffersScreen';
-import LoginScreen from '../src/components/LoginScreen';
-import ListArticlesScreen from '../src/components/ListArticlesScreen';
-import FavoritesScreen from '../src/components/FavoritesScreen';
-import CategoryArticles from '../src/components/CategoryArticles';
-import DetailsScreen from '../src/components/DetailsScreen';
-import MyPurchasesScreen from '../src/components/MyPurchasesScreen';
+import ProfileScreen from '../src/screen/ProfileScreen';
+import ShoppingCartsScreen from '../src/screen/ShoppingCartsScreen';
+import OptionsScreen from '../src/screen/OptionsScreen';
+import SupportScreen from '../src/screen/SupportScreen';
+import SearchBarScreen from '../src/screen/SearchBarScreen';
+import SettingsScreen from '../src/screen/SettingsScreen';
+import RegisterScreen from '../src/screen/RegisterScreen';
+import PaymentBranchScreen from '../src/screen/PaymentBranchScreen';
+import OffersScreen from '../src/screen/OffersScreen';
+import LoginScreen from '../src/screen/LoginScreen';
+import ListArticlesScreen from '../src/screen/ListArticlesScreen';
+import FavoritesScreen from '../src/screen/FavoritesScreen';
+import CategoryArticles from '../src/screen/CategoryArticles';
+import DetailsScreen from '../src/screen/DetailsScreen';
+import MyPurchasesScreen from '../src/screen/MyPurchasesScreen';
 import {createStackNavigator} from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import DetailsPurchasesScreen from '../src/screen/DetailsPurchasesScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -108,62 +110,68 @@ const MainStack = () => {
 };
 
 const AppStack = () => {
-
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="MainStack"
-        component={MainStack}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ headerShown: false}}
-      />
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{title: 'Home'}}
-      />
-      <Stack.Screen
-        name="Register"
-        component={RegisterScreen}
-        options={{title: 'Registrarse'}}
-      />
-      <Stack.Screen
-        name="Category"
-        component={CategoryArticles}
-        options={{title: 'Categorias'}}
-      />
-      <Stack.Screen
-        name="ListArticles"
-        component={ListArticlesScreen}
-        options={{title: 'Lista de articulos'}}
-      />
-      <Stack.Screen
-        name="Offers"
-        component={OffersScreen}
-        options={{title: 'Ofertas'}}
-      />
-      <Stack.Screen
-        name="PaymentBranch"
-        component={PaymentBranchScreen}
-        options={{title: 'Pasarela de pago'}}
-      />
-      <Stack.Screen name="Settings" component={SettingsScreen} />
-      <Stack.Screen
-        name="ShoppingCarts"
-        component={ShoppingCartsScreen}
-        options={{title: 'Carrito de compras'}}
-      />
-      <Stack.Screen
-        name="Support"
-        component={SupportScreen}
-        options={{title: 'Soporte y Ayuda'}}
-      />
-      <Stack.Screen name="Search" component={SearchBarScreen} />
-    </Stack.Navigator>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="MainStack"
+          component={MainStack}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{title: 'Home'}}
+        />
+        <Stack.Screen
+          name="Register"
+          component={RegisterScreen}
+          options={{title: 'Registrarse'}}
+        />
+        <Stack.Screen
+          name="Category"
+          component={CategoryArticles}
+          options={{title: 'Categorias'}}
+        />
+        <Stack.Screen
+          name="ListArticles"
+          component={ListArticlesScreen}
+          options={{title: 'Lista de articulos'}}
+        />
+        <Stack.Screen
+          name="Offers"
+          component={OffersScreen}
+          options={{title: 'Ofertas'}}
+        />
+        <Stack.Screen
+          name="PaymentBranch"
+          component={PaymentBranchScreen}
+          options={{title: 'Pasarela de pago'}}
+        />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen
+          name="ShoppingCarts"
+          component={ShoppingCartsScreen}
+          options={{title: 'Carrito de compras'}}
+        />
+        <Stack.Screen
+          name="Support"
+          component={SupportScreen}
+          options={{title: 'Soporte y Ayuda'}}
+        />
+        <Stack.Screen
+          name="DetailsPurchases"
+          component={DetailsPurchasesScreen}
+          options={{title: 'Detalle de compra'}}
+        />
+        <Stack.Screen name="Search" component={SearchBarScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

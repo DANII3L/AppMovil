@@ -1,6 +1,8 @@
-apply plugin: "com.android.application"
-apply plugin: "org.jetbrains.kotlin.android"
-apply plugin: "com.facebook.react"
+plugins {
+  id 'com.android.application'
+  id 'org.jetbrains.kotlin.android'
+  id 'com.facebook.react'
+}
 
 project.ext.vectoricons = [
     iconFontNames: [ 'Ionicons.ttf' ] // Specify font files
@@ -114,7 +116,6 @@ android {
 }
 
 dependencies {
-    // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
     if (hermesEnabled.toBoolean()) {
@@ -128,3 +129,4 @@ project.ext.react = [
     entryFile: "index.js",
     enableHermes: false,
 ]
+ 

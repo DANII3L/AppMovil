@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {useAuth} from '../data/authContext';
 import stylesLogin from '../styles/styleLogin';
+import TaskContext from '../context/TaskContext';
 
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -17,7 +18,8 @@ const LoginScreen = ({navigation}) => {
   const [password, setPassword] = useState('');
   const [errorPassword, setErrorPassword] = useState('');
   const [errorGeneral, seterrorGeneral] = useState('');
-  const {login, getDataUsers} = useAuth();
+  const {login} = useAuth();
+  const {state} = useContext(TaskContext);
 
   const validateEmail = email => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,12 +41,11 @@ const LoginScreen = ({navigation}) => {
     setErrorEmail('');
     setErrorPassword('');
 
-    let users = await getDataUsers();
+    const users = state.users;
     const userFind = users.filter(
       user => user.Correo === email && user.Contrasena === password,
     );
-
-    if (userFind && userFind.length > 0) {
+    if (userFind.length > 0) {
       await login(email);
       navigation.navigate('MainStack');
     } else {

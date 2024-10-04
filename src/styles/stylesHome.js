@@ -56,6 +56,47 @@ const stylesHome = StyleSheet.create({
     flex: 1,
     marginTop: 10,
   },
+  amount: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#4a4a4a',
+    marginTop: 5,
+    backgroundColor: '#f0f0f0',
+    padding: 5,
+    borderRadius: 5,
+    alignSelf: 'flex-start',
+  },
+  deleteButton: {
+    backgroundColor: '#FF3B30',
+    padding: 5,
+    borderRadius: 5,
+    marginTop: 5,
+    alignSelf: 'flex-start',
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  detailsContainer: {
+    marginBottom: 30,
+    padding: 15,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  detailText: {
+    fontSize: 16,
+    color: '#333',
+    marginVertical: 5,
+  },
 });
 
 export default stylesHome;

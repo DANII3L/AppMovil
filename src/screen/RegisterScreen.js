@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   Button,
   TouchableOpacity,
   Alert,
-  StyleSheet,
 } from 'react-native';
 import ModalSelector from 'react-native-modal-selector';
 import moment from 'moment';
@@ -14,10 +13,11 @@ import {useNavigation} from '@react-navigation/native';
 import {useAuth} from '../data/authContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import globalStyles from '../styles/globalStyles';
+import TaskContext from '../context/TaskContext';
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
-  const {registerDataUser, getDataUsers} = useAuth();
+  const {registerDataUser} = useAuth();
   const [usuario, setUsuario] = useState('');
   const [contraseña, setContraseña] = useState('');
   const [correo, setCorreo] = useState('');
@@ -27,6 +27,7 @@ const RegisterScreen = () => {
   const [pais] = useState('Colombia');
   const [departamento, setDepartamento] = useState('');
   const [ciudad, setCiudad] = useState('');
+  const {state} = useContext(TaskContext);
 
   const validarFormulario = async () => {
     const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,6 +55,12 @@ const RegisterScreen = () => {
       return;
     }
 
+    const userExist = state.users.filter(user => user.Correo === correo);
+    if (userExist.length > 0) {
+      Alert.alert('Error', 'El correo digitado ya posee una cuenta.');
+      return;
+    }
+
     const edad = moment().diff(moment(fechaNacimiento, 'YYYY-MM-DD'), 'years');
     if (edad < 18 || edad > 50) {
       Alert.alert('Error', 'No está en el rango de edad para crear la cuenta.');
@@ -65,20 +72,18 @@ const RegisterScreen = () => {
       return;
     }
 
-    const newUser = [
-      {
-        Usuario: usuario,
-        Contrasena: contraseña,
-        Correo: correo,
-        FechaNacimiento: fechaNacimiento,
-        Direccion: direccion,
-        Pais: pais,
-        Departamento: departamento,
-        Ciudad: ciudad,
-        ImageProfile:
-          'https://st5.depositphotos.com/3848923/64429/i/450/depositphotos_644292984-stock-illustration-black-white-cute-man-cartoon.jpg',
-      },
-    ];
+    const newUser = {
+      Usuario: usuario,
+      Contrasena: contraseña,
+      Correo: correo,
+      FechaNacimiento: fechaNacimiento,
+      Direccion: direccion,
+      Pais: pais,
+      Departamento: departamento,
+      Ciudad: ciudad,
+      ImageProfile:
+        'https://st5.depositphotos.com/3848923/64429/i/450/depositphotos_644292984-stock-illustration-black-white-cute-man-cartoon.jpg',
+    };
     await registerDataUser(newUser);
     Alert.alert('Registro Exitoso', '¡Tu cuenta ha sido creada exitosamente!');
     navigation.navigate('Login');
@@ -137,7 +142,7 @@ const RegisterScreen = () => {
     : [];
 
   return (
-    <View style={{ padding: 20 }}>
+    <View style={{padding: 20}}>
       <Text>Usuario:</Text>
       <TextInput
         style={globalStyles.input}

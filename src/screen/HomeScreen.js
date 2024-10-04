@@ -1,12 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import {
-  View,
-  SafeAreaView,
-  Text,
-  FlatList,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import React, {useState, useEffect, useContext, useRef} from 'react';
+import {View, SafeAreaView, Text, FlatList} from 'react-native';
 import SearchBarScreen from './SearchBarScreen';
 import globalStyles from '../styles/globalStyles';
 import {carouselData} from '../data/carouselData';
@@ -14,29 +7,44 @@ import CarouselItem from './CarouselItem';
 import Swiper from 'react-native-swiper';
 import {continueBuyData} from '../data/continueBuyData';
 import ContinueBuyingSection from './ContinueBuySection';
-import {useAuth} from '../data/authContext';
-import {productsData} from '../data/productsData';
 import stylesHome from '../styles/stylesHome';
 import {ScrollView} from 'react-native-gesture-handler';
 import CardsProducts from './CardsProducts';
+import TaskContext from '../context/TaskContext';
+import {productsData} from '../data/productsData';
 
 const HomeScreen = ({navigation}) => {
-  const {isAuthenticated} = useAuth();
   const [searchText, setSearchText] = useState('');
-  const [filteredProducts, setFilteredProducts] = useState(productsData);
+  const {state, dispatch} = useContext(TaskContext);
+  const dataLoadedRef = useRef(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    const userConnect = state.userConnect.length > 0;
+    if (!userConnect) {
       navigation.navigate('Login');
     }
-  }, [isAuthenticated, navigation]);
+  }, [navigation, state.userConnect]);
 
   useEffect(() => {
-    const filtered = productsData.filter(product =>
-      product.title.toLowerCase().includes(searchText.toLowerCase()),
-    );
-    setFilteredProducts(filtered);
-  }, [searchText]);
+    if (!dataLoadedRef.current) {
+      productsData.forEach(product => {
+        const exists = state.products.some(item => item.id === product.id);
+        if (!exists) {
+          dispatch({
+            type: 'SET_ITEMS',
+            payload: product,
+            collectionType: 'products',
+          });
+        }
+      });
+      dataLoadedRef.current = true;
+    }
+  }, [dispatch, state.products]);
+
+  const filteredProducts = state.products.filter(item => {
+    const searchTextLower = searchText.toLowerCase();
+    return item.title.toLowerCase().includes(searchTextLower);
+  });
 
   const handleSearch = query => {
     setSearchText(query);
