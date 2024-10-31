@@ -7,16 +7,15 @@ const ProfileScreen = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const {state} = useContext(TaskContext);
+  const userCorreo = state.userConnect[0]?.userCorreo ?? null;
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        let userConnect = state.users.filter(user => user.correo === state.userConnect[0].correo)[0];
-        console.log(userConnect);
+        let userConnect = state.users.filter(user => user.Correo === userCorreo)[0];
         if (userConnect) {
           setUser(userConnect);
         } else {
-          Alert.alert('Alerta', 'Usuario no encontrado');
           return;
         }
       } catch (error) {
@@ -26,7 +25,7 @@ const ProfileScreen = () => {
       }
     };
     fetchUserData();
-  }, [state.userConnect, state.users]);
+  }, [userCorreo, state.users]);
 
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
@@ -41,8 +40,8 @@ const ProfileScreen = () => {
     );
   }
 
-  const {Usuario, Direccion, FechaNacimiento, ImageProfile} = user;
-  console.log(FechaNacimiento);
+  const {Correo, Direccion, FechaNacimiento, ImageProfile, Departamento, Ciudad} = user;
+
   const date = new Date(FechaNacimiento);
   const day = String(date.getDate()).padStart(2, '0');
   const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -53,7 +52,9 @@ const ProfileScreen = () => {
     <View style={styleProfile.container}>
       <Image source={{uri: ImageProfile}} style={styleProfile.profileImage} />
       <View style={styleProfile.infoContainer}>
-        <Text style={styleProfile.name}>{Usuario}</Text>
+        <Text style={styleProfile.name}>{Correo}</Text>
+        <Text style={styleProfile.dob}>Departamento: {Departamento}</Text>
+        <Text style={styleProfile.dob}>Ciudad: {Ciudad}</Text>
         <Text style={styleProfile.dob}>Dirección: {Direccion}</Text>
         <Text style={styleProfile.dob}>
           Fecha de nacimiento: {formattedFechaNacimiento}

@@ -7,18 +7,14 @@ import ShoppingCartsScreen from '../src/screen/ShoppingCartsScreen';
 import OptionsScreen from '../src/screen/OptionsScreen';
 import SupportScreen from '../src/screen/SupportScreen';
 import SearchBarScreen from '../src/screen/SearchBarScreen';
-import SettingsScreen from '../src/screen/SettingsScreen';
 import RegisterScreen from '../src/screen/RegisterScreen';
-import PaymentBranchScreen from '../src/screen/PaymentBranchScreen';
 import OffersScreen from '../src/screen/OffersScreen';
 import LoginScreen from '../src/screen/LoginScreen';
-import ListArticlesScreen from '../src/screen/ListArticlesScreen';
 import FavoritesScreen from '../src/screen/FavoritesScreen';
-import CategoryArticles from '../src/screen/CategoryArticles';
 import DetailsScreen from '../src/screen/DetailsScreen';
 import MyPurchasesScreen from '../src/screen/MyPurchasesScreen';
 import {createStackNavigator} from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
+import {NavigationContainer} from '@react-navigation/native';
 import DetailsPurchasesScreen from '../src/screen/DetailsPurchasesScreen';
 
 const Tab = createBottomTabNavigator();
@@ -83,13 +79,6 @@ const MainStack = () => {
         component={OptionsScreen}
         options={{title: 'Opciones'}}
       />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          tabBarButton: () => null,
-        }}
-      />
       <Stack.Screen
         name="Favorites"
         component={FavoritesScreen}
@@ -134,26 +123,10 @@ const AppStack = () => {
           options={{title: 'Registrarse'}}
         />
         <Stack.Screen
-          name="Category"
-          component={CategoryArticles}
-          options={{title: 'Categorias'}}
-        />
-        <Stack.Screen
-          name="ListArticles"
-          component={ListArticlesScreen}
-          options={{title: 'Lista de articulos'}}
-        />
-        <Stack.Screen
           name="Offers"
           component={OffersScreen}
           options={{title: 'Ofertas'}}
         />
-        <Stack.Screen
-          name="PaymentBranch"
-          component={PaymentBranchScreen}
-          options={{title: 'Pasarela de pago'}}
-        />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
         <Stack.Screen
           name="ShoppingCarts"
           component={ShoppingCartsScreen}

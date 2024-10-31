@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -13,14 +13,63 @@ import stylesPurchases from '../styles/stylePurchases';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import ConfirmationAlert from '../components/ConfirmationAlert';
 import TaskContext from '../context/TaskContext';
+import {FirebaseContext} from '../firebase';
 
 const MyPurchasesScreen = ({navigation}) => {
   const [searchText, setSearchText] = useState('');
   const [selectedDate, setSelectedDate] = useState(null);
   const {state, dispatch} = useContext(TaskContext);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const {firebase} = useContext(FirebaseContext);
+  const dataLoadedRef = useRef(false);
+  const userCorreo = state.userConnect[0]?.userCorreo ?? null;
+  useEffect(() => {
+    if (!dataLoadedRef.current) {
+      firebase.db
+        .collection('purchaseHistory')
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            if (doc.id.includes('_' + userCorreo)) {
+              let purchase = {
+                id: Number(doc.data().id),
+                title: doc.data().title,
+                shippingCost: doc.data().shippingCost
+                  ? Number(doc.data().shippingCost)
+                  : null,
+                valorBruto: doc.data().valorBruto
+                  ? Number(doc.data().valorBruto)
+                  : null,
+                discount: doc.data().discount
+                  ? Number(doc.data().discount)
+                  : null,
+                dateBuy: formatDate(doc.data().dateBuy),
+                valorTotal: doc.data().valorTotal
+                  ? Number(doc.data().valorTotal)
+                  : null,
+                medioDePago: doc.data().medioDePago,
+                estado: doc.data().estado,
+                userCorreo: doc.data().userCorreo ?? null,
+                products: doc.data().products,
+              };
+              const exists = state.purchaseHistory.some(
+                item => item.id === purchase.id,
+              );
+              if (!exists) {
+                dispatch({
+                  type: 'SET_ITEMS',
+                  payload: purchase,
+                  collectionType: 'purchaseHistory',
+                });
+              }
+            }
+          });
+        });
+      dataLoadedRef.current = true;
+    }
+  }, [dispatch, state.purchaseHistory, firebase.db, userCorreo]);
 
-  const formatDate = (date) => {
+  const formatDate = date => {
     const parts = date.split('/');
     parts[0] = parts[0].padStart(2, '0');
     return parts.join('/');
@@ -38,8 +87,7 @@ const MyPurchasesScreen = ({navigation}) => {
       ? false
       : true;
 
-    const isMatchingUserCorreo = item.userCorreo === state.userConnect[0]?.userCorreo;
-
+    const isMatchingUserCorreo = item.userCorreo === userCorreo;
     return (isMatchingName || isMatchingDate) && isMatchingUserCorreo;
   });
 
@@ -56,8 +104,10 @@ const MyPurchasesScreen = ({navigation}) => {
           ...item,
           estado: 'cancelado',
         };
-
-        console.log(updatedItem);
+        firebase.db
+          .collection('purchaseHistory')
+          .doc(item.id.toString() + '_' + userCorreo)
+          .update(updatedItem);
         dispatch({
           type: 'UPDATE_ITEM',
           payload: updatedItem,

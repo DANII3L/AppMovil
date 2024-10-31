@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {useAuth} from '../data/authContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import globalStyles from '../styles/globalStyles';
 import TaskContext from '../context/TaskContext';
+import { FirebaseContext } from '../firebase';
 
 const RegisterScreen = () => {
   const navigation = useNavigation();
@@ -28,6 +29,7 @@ const RegisterScreen = () => {
   const [departamento, setDepartamento] = useState('');
   const [ciudad, setCiudad] = useState('');
   const {state} = useContext(TaskContext);
+  const {firebase} = useContext(FirebaseContext);
 
   const validarFormulario = async () => {
     const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -82,8 +84,9 @@ const RegisterScreen = () => {
       Departamento: departamento,
       Ciudad: ciudad,
       ImageProfile:
-        'https://st5.depositphotos.com/3848923/64429/i/450/depositphotos_644292984-stock-illustration-black-white-cute-man-cartoon.jpg',
+        'https://firebasestorage.googleapis.com/v0/b/app-movil-dc1fe.appspot.com/o/man-cartoon.jpg?alt=media&token=0cf7e33d-6b29-4f78-b723-93c6f9f0f318',
     };
+    firebase.db.collection('users').doc(newUser.Correo.toString()).set(newUser);
     await registerDataUser(newUser);
     Alert.alert('Registro Exitoso', '¡Tu cuenta ha sido creada exitosamente!');
     navigation.navigate('Login');

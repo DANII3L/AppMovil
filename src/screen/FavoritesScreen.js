@@ -4,26 +4,35 @@ import stylesFavorites from '../styles/stylesFavorites';
 import TaskContext from '../context/TaskContext';
 import TaskListFavoritesItems from '../components/TaskListFavoritesItems';
 import ConfirmationAlert from '../components/ConfirmationAlert';
+import { FirebaseContext } from '../firebase';
 
 const FavoritesScreen = ({navigation}) => {
   const {state, dispatch} = useContext(TaskContext);
   const [searchText, setSearchText] = useState('');
-
+  const userCorreo = state.userConnect[0]?.userCorreo ?? null;
+  const {firebase} = useContext(FirebaseContext);
   const filteredFavorites = state.favorites.filter(item => {
     const searchTextLower = searchText.toLowerCase();
-    return item.title.toLowerCase().includes(searchTextLower) && item.userCorreo === state.userConnect[0]?.userCorreo;
+    return item.title.toLowerCase().includes(searchTextLower) && item.userCorreo === userCorreo;
   });
 
   const onDeletePress = item => {
     ConfirmationAlert({
       title: 'Confirmar eliminación',
       message: `¿Estás seguro de que quieres eliminar ${item.title} de tus favoritos?`,
-      onConfirm: () =>
-        dispatch({
-          type: 'DELETE_ITEM',
-          payload:{id: item.id},
-          collectionType: 'favorites',
-        }),
+      onConfirm: () => {
+        firebase.db.collection('favorites').doc(item.id.toString() + '_' + userCorreo).delete()
+          .then(() => {
+            dispatch({
+              type: 'DELETE_ITEM',
+              payload:{id: item.id},
+              collectionType: 'favorites',
+            });
+          })
+          .catch((error) => {
+            console.error('Error eliminando el item de favoritos: ', error);
+          });
+      },
       onCancel: () => console.log('Eliminación cancelada'),
     });
   };

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -7,13 +7,14 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import {productsData} from '../data/productsData';
 import stylesOffers from '../styles/stylesOffers';
+import TaskContext from '../context/TaskContext';
 
 const OffersScreen = ({navigation}) => {
   const [searchText, setSearchText] = useState('');
+  const {state} = useContext(TaskContext);
 
-  const filteredOffers = productsData.filter(
+  const filteredOffers = state.products.filter(
     item =>
       item.discount !== null &&
       item.title.toLowerCase().includes(searchText.toLowerCase()),
