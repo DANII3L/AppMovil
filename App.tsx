@@ -9,14 +9,17 @@ import React from 'react';
 import {AuthProvider} from './src/data/authContext';
 import AppStack from './navigation/AppStack';
 import {TaskProvider} from './src/context/TaskContext';
+import firebase, {FirebaseContext} from './src/firebase';
 
 function App(): React.JSX.Element {
   return (
-    <TaskProvider>
-      <AuthProvider>
-        <AppStack />
-      </AuthProvider>
-    </TaskProvider>
+    <FirebaseContext.Provider value={{firebase: firebase}}>
+      <TaskProvider>
+        <AuthProvider>
+          <AppStack />
+        </AuthProvider>
+      </TaskProvider>
+    </FirebaseContext.Provider>
   );
 }
 

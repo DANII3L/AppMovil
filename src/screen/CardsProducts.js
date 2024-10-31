@@ -5,6 +5,7 @@ import stylesFavorites from '../styles/stylesFavorites';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import TaskContext from '../context/TaskContext';
 import ConfirmationAlert from '../components/ConfirmationAlert';
+import { FirebaseContext } from '../firebase';
 
 const CardsProducts = ({
   item,
@@ -14,22 +15,29 @@ const CardsProducts = ({
 }) => {
   const {state, dispatch} = useContext(TaskContext);
   const statusColor = item.estado === 'Disponible' ? 'green' : 'red';
-  const userCorreo = state.userConnect[0]?.userCorreo;
+  const userCorreo = state.userConnect[0]?.userCorreo ?? null;
+  const {firebase} = useContext(FirebaseContext);
   const isFavorite = state.favorites.some(
     fav => fav.id === item.id && fav.userCorreo === userCorreo,
   );
   const handleFavoritePress = () => {
-
     if (isFavorite) {
       ConfirmationAlert({
         title: 'Confirmar eliminación',
         message: `¿Estás seguro de que quieres eliminar ${item.title} de tus favoritos?`,
-        onConfirm: () =>
-          dispatch({
-            type: 'DELETE_ITEM',
-            payload:{id: item.id},
-            collectionType: 'favorites',
-          }),
+        onConfirm: () => {
+          firebase.db.collection('favorites').doc(item.id.toString() + '_' + userCorreo).delete()
+            .then(() => {
+              dispatch({
+                type: 'DELETE_ITEM',
+                payload:{id: item.id},
+                collectionType: 'favorites',
+              });
+            })
+            .catch((error) => {
+              console.error('Error eliminando el item de favoritos: ', error);
+            });
+        },
         onCancel: () => console.log('Eliminación cancelada'),
       });
     } else {
@@ -37,12 +45,13 @@ const CardsProducts = ({
         ...item,
         userCorreo: userCorreo,
       };
-      dispatch({
-        type: 'ADD_ITEM',
-        payload: itemNew,
-        collectionType: 'favorites',
-      });
-      Alert.alert('Producto agregado a favoritos');
+        firebase.db.collection('favorites').doc(itemNew.id.toString() + '_' + userCorreo).set(itemNew);
+        dispatch({
+          type: 'ADD_ITEM',
+          payload: itemNew,
+          collectionType: 'favorites',
+        });
+        Alert.alert('Producto agregado a favoritos');
     }
   };
 

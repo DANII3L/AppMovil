@@ -2,13 +2,14 @@ import React, {createContext, useReducer} from 'react';
 
 const TaskContext = createContext();
 
-const inicialState = {
+const initialState = {
   products: [],
   favorites: [],
   productsBuy: [],
   purchaseHistory: [],
   users: [],
   userConnect: [],
+  carouselData: [],
 };
 
 const taskReducer = (state, action) => {
@@ -20,7 +21,6 @@ const taskReducer = (state, action) => {
         [collectionType]: [...state[collectionType], payload],
       };
     case 'ADD_ITEM':
-      // database().ref(`/${collectionType}/${payload.id}`).set(payload);
       return {
         ...state,
         [collectionType]: [...state[collectionType], payload],
@@ -29,7 +29,6 @@ const taskReducer = (state, action) => {
       if (!payload || !payload.id) {
         return state;
       }
-      // database().ref(`/${collectionType}/${payload.id}`).set(payload);
       return {
         ...state,
         [collectionType]: state[collectionType].map(item => {
@@ -39,7 +38,7 @@ const taskReducer = (state, action) => {
             )
           ) {
             return item.id === payload.id &&
-              item.userCorreo === state.userConnect[0].userCorreo
+              item.userCorreo === (state.userConnect[0]?.userCorreo ?? null)
               ? payload
               : item;
           }
@@ -50,7 +49,6 @@ const taskReducer = (state, action) => {
       if (!payload) {
         return state;
       }
-      // database().ref(`/${collectionType}/${payload.id}`).remove();
       return {
         ...state,
         [collectionType]: state[collectionType].filter(item => {
@@ -61,7 +59,7 @@ const taskReducer = (state, action) => {
           ) {
             return !(
               item.id === payload.id &&
-              item.userCorreo === state.userConnect[0].userCorreo
+              item.userCorreo === (state.userConnect[0]?.userCorreo ?? null)
             );
           } else if (collectionType === 'userConnect') {
             return false;
@@ -73,8 +71,7 @@ const taskReducer = (state, action) => {
       return {
         ...state,
         [collectionType]: state[collectionType].filter(item => {
-          console.log(item.userCorreo, state.userConnect[0].userCorreo);
-          return !(item.userCorreo === state.userConnect[0].userCorreo);
+          return !((item.userCorreo) === (state.userConnect[0]?.userCorreo ?? null));
         }),
       };
     default:
@@ -83,7 +80,7 @@ const taskReducer = (state, action) => {
 };
 
 export const TaskProvider = ({children}) => {
-  const [state, dispatch] = useReducer(taskReducer, inicialState);
+  const [state, dispatch] = useReducer(taskReducer, initialState);
 
   return (
     <TaskContext.Provider value={{state, dispatch}}>

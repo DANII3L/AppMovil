@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 import {useAuth} from '../data/authContext';
 import stylesLogin from '../styles/styleLogin';
 import TaskContext from '../context/TaskContext';
+import { FirebaseContext } from '../firebase';
 
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
@@ -19,7 +20,45 @@ const LoginScreen = ({navigation}) => {
   const [errorPassword, setErrorPassword] = useState('');
   const [errorGeneral, seterrorGeneral] = useState('');
   const {login} = useAuth();
-  const {state} = useContext(TaskContext);
+  const {state, dispatch} = useContext(TaskContext);
+  const {firebase} = useContext(FirebaseContext);
+  const dataLoadedRef = useRef(false);
+
+  useEffect(() => {
+    if (!dataLoadedRef.current) {
+      if (firebase && firebase.db) {
+        firebase.db.collection('users').get().then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            let userData = {
+              id: doc.id,
+              Correo: doc.data().Correo,
+              Contrasena: doc.data().Contrasena,
+              FechaNacimiento: new Date(doc.data().FechaNacimiento.seconds * 1000),
+              Direccion: doc.data().Direccion,
+              Pais: doc.data().Pais,
+              Departamento: doc.data().Departamento,
+              Ciudad: doc.data().Ciudad,
+              ImageProfile: doc.data().ImageProfile,
+            };
+            const exists = state.users.some(item => item.Correo === userData.Correo);
+            if (!exists) {
+              dispatch({
+                type: 'SET_ITEMS',
+                payload: userData,
+                collectionType: 'users',
+              });
+            }
+          });
+        }).catch(error => {
+          console.error("Error al obtener usuarios: ", error);
+        });
+      } else {
+        console.error("Firebase no está inicializado correctamente.");
+      }
+
+      dataLoadedRef.current = true;
+    }
+  }, [dispatch, state.users, firebase]);
 
   const validateEmail = email => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,31 +81,17 @@ const LoginScreen = ({navigation}) => {
     setErrorPassword('');
 
     const users = state.users;
+
     const userFind = users.filter(
       user => user.Correo === email && user.Contrasena === password,
     );
+
     if (userFind.length > 0) {
       await login(email);
       navigation.navigate('MainStack');
     } else {
       seterrorGeneral('No se ha encontrado este usuario registrado.');
     }
-    /*
-      !Obtener respuesta en caso de Api - llamada a API para autenticación
-
-      const response = await fetch('url mi api', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const result = await response.json();
-      if (result.token) {
-        await login(result.token);
-        navigation.navigate('AppStack');
-      } else {
-        console.error("Authentication failed");
-      }*/
   };
 
   return (
@@ -74,7 +99,7 @@ const LoginScreen = ({navigation}) => {
       <ScrollView contentContainerStyle={stylesLogin.scrollView}>
         <Image
           source={{
-            uri: 'https://u-static.fotor.com/images/text-to-image/result/PRO-85ba8d1b4dff4c7fb7fa641a22d012ad.jpg',
+            uri: 'https://firebasestorage.googleapis.com/v0/b/app-movil-dc1fe.appspot.com/o/Welcome.jpg?alt=media&token=d0f0955a-22da-47f5-883d-744e2512ad72',
           }}
           style={stylesLogin.image}
           resizeMode="cover"

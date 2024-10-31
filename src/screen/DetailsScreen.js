@@ -9,17 +9,18 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import {productsData} from '../data/productsData';
 import styleDetails from '../styles/styleDetails';
 import TaskContext from '../context/TaskContext';
 import stylesFavorites from '../styles/stylesFavorites';
+import { FirebaseContext } from '../firebase';
 
 const DetailsScreen = ({route}) => {
   const {id} = route.params;
   const [quantity, setQuantity] = useState('1');
   const {state, dispatch} = useContext(TaskContext);
-  const item = productsData.find(product => product.id === id);
+  const item = state.products.find(product => product.id === id);
   const statusColor = item.estado === 'Disponible' ? 'green' : 'red';
+  const {firebase} = useContext(FirebaseContext);
 
   if (!item) {
     return <Text>Producto no encontrado</Text>;
@@ -43,20 +44,22 @@ const DetailsScreen = ({route}) => {
       return;
     }
 
-    const userCorreo = state.userConnect[0].userCorreo;
+    const userCorreo = state.userConnect[0]?.userCorreo ?? null;
 
     if (
       !state.productsBuy.some(
         product => product.id === producto.id && product.userCorreo === userCorreo,
       )
     ) {
+      const itemNew = {
+        ...producto,
+        amount: cantidadNumerica,
+        userCorreo: userCorreo,
+      };
+      firebase.db.collection('productsBuy').doc(producto.id.toString() + '_' + userCorreo).set(itemNew);
       dispatch({
         type: 'ADD_ITEM',
-        payload: {
-          ...producto,
-          amount: cantidadNumerica,
-          userCorreo: userCorreo,
-        },
+        payload: itemNew,
         collectionType: 'productsBuy',
       });
       Alert.alert('Producto agregado al carrito');
